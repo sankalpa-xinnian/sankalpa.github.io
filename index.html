@@ -6,35 +6,28 @@
     <title>sankalpa心念 - 疗愈音乐空间</title>
     <style>
         :root {
-            /* 严格使用样稿中的小麦色和深咖色 */
             --bg-page: #f1ece4;       /* 整体奶茶色底色 */
             --bg-card: #e5ddd3;       /* 样稿中的小麦色卡片底色 */
-            --text-main: #3e2723;     /* 深咖色控件与文字 */
-            --accent: #a1887f;        /* 辅助褐色 */
+            --text-main: #3e2723;     /* 深咖色文字 */
+            --accent: #a1887f;        
         }
 
         body {
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
             background-color: var(--bg-page);
             color: var(--text-main);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        /* --- Banner 零裁切 --- */
         .banner-container { width: 100%; line-height: 0; }
         .banner-img { width: 100%; height: auto; display: block; }
         .pc-banner { display: block; }
         .mobile-banner { display: none; }
         @media (max-width: 768px) { .pc-banner { display: none; } .mobile-banner { display: block; } }
 
-        /* --- 容器布局 --- */
         .container {
-            max-width: 1200px;
-            width: 90%;
+            max-width: 1200px; width: 90%;
             padding: 40px 0 160px 0;
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -43,124 +36,75 @@
         @media (max-width: 1024px) { .container { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 768px) { .container { grid-template-columns: 1fr; } }
 
-        /* --- 终极复刻卡片：完全按照样稿结构 --- */
+        /* --- 极简小麦色卡片 --- */
         .music-card {
             background: var(--bg-card);
-            border-radius: 30px; /* 大圆角卡片 */
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 28px;
+            padding: 15px 15px 25px 15px; /* 留出精致的边距 */
+            display: flex; flex-direction: column;
+            transition: all 0.3s ease;
             cursor: pointer;
-            /* 严格复刻样稿的留白 */
-            padding: 20px 20px 30px 20px; 
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
         }
 
         .music-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(78, 52, 46, 0.12);
+            box-shadow: 0 10px 25px rgba(62, 39, 35, 0.1);
         }
 
-        /* 封面图容器：实现留边与圆角嵌套 */
         .cover-box {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            border-radius: 20px; /* 图片的内层圆角 */
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-
-        .cover-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* 标题排版 */
-        .info {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .title {
-            font-size: 0.9em;
-            font-weight: 400; /* 清雅字体 */
-            letter-spacing: 0.5px;
-            line-height: 1.4;
-            color: var(--text-main);
-            min-height: 2.8em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* --- 复刻样稿的播放控件区 --- */
-        .card-controls {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-
-        /* 模拟进度条 */
-        .fake-progress {
-            width: 80%;
-            height: 2px;
-            background-color: rgba(62, 39, 35, 0.2);
+            width: 100%; aspect-ratio: 1 / 1;
+            border-radius: 18px; overflow: hidden;
             position: relative;
+            margin-bottom: 15px;
         }
-        .fake-progress::after {
-            content: '';
+
+        .cover-img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* --- 图片中心播放按钮 --- */
+        .play-hint {
             position: absolute;
-            left: 0; top: 50%;
-            transform: translateY(-50%);
-            width: 6px; height: 6px;
-            background-color: var(--text-main);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px; height: 50px;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(4px);
+            border: 2px solid rgba(255, 255, 255, 0.7);
             border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2;
+        }
+        .play-hint::after {
+            content: '';
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-left: 15px solid white;
+            margin-left: 5px;
         }
 
-        /* 模拟控制按钮 ($\blacktriangleleft \blacktriangleleft$, $II$, $\blacktriangleright \blacktriangleright$) */
-        .fake-buttons {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-            font-size: 1.2em;
-            color: var(--text-main);
-            opacity: 0.8;
-        }
-        .play-btn {
-            width: 35px;
-            height: 35px;
-            border: 2px solid var(--text-main);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9em;
+        .info { text-align: center; }
+        .title {
+            font-size: 0.95em; font-weight: 700; /* 标题加粗 */
+            letter-spacing: 0.5px; line-height: 1.4;
+            min-height: 2.8em;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        /* --- 实际播放器 - 隐藏但发挥功能 --- */
+        /* --- 底部播放条 --- */
         .player-bar {
-            position: fixed;
-            bottom: 25px;
-            width: 85%;
-            max-width: 550px;
-            background: rgba(229, 221, 211, 0.95); /* 使用卡片小麦色 */
+            position: fixed; bottom: 25px;
+            width: 85%; max-width: 500px;
+            background: rgba(229, 221, 211, 0.95);
             backdrop-filter: blur(20px);
+            border: 1px solid rgba(62, 39, 35, 0.1);
             border-radius: 100px;
             padding: 12px 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex; flex-direction: column; align-items: center;
             z-index: 1000;
-            display: none; /* 初始隐藏，点击后显示 */
         }
-        #currentPlaying { font-size: 0.85em; font-weight: 700; margin-bottom: 5px; color: var(--text-main); }
-        audio { width: 100%; height: 35px; filter: sepia(20%) contrast(90%); }
+        #currentPlaying { font-size: 0.8em; font-weight: 700; margin-bottom: 5px; opacity: 0.8; }
+        audio { width: 100%; height: 35px; filter: sepia(30%) contrast(90%); }
 
         .active-card { border: 2px solid var(--text-main); }
     </style>
@@ -174,8 +118,8 @@
 
 <div class="container" id="musicList"></div>
 
-<div class="player-bar" id="playerBar">
-    <div id="currentPlaying">已备好，请开启心念</div>
+<div class="player-bar">
+    <div id="currentPlaying">请开启您的心念之旅</div>
     <audio id="mainPlayer" controls></audio>
 </div>
 
@@ -196,7 +140,6 @@
 
     const musicList = document.getElementById('musicList');
     const player = document.getElementById('mainPlayer');
-    const playerBar = document.getElementById('playerBar');
     const playingText = document.getElementById('currentPlaying');
 
     songs.forEach(song => {
@@ -204,24 +147,16 @@
         card.className = 'music-card';
         card.innerHTML = `
             <div class="cover-box">
+                <div class="play-hint"></div>
                 <img src="cover${song.id}.jpg" class="cover-img">
             </div>
             <div class="info">
                 <div class="title">${song.title}</div>
             </div>
-            <div class="card-controls">
-                <div class="fake-progress"></div>
-                <div class="fake-buttons">
-                    <div>$\blacktriangleleft \blacktriangleleft$</div>
-                    <div class="play-btn">$II$</div>
-                    <div>$\blacktriangleright \blacktriangleright$</div>
-                </div>
-            </div>
         `;
         card.onclick = () => {
             player.src = `${baseUrl}${song.id}.mp3`;
             player.play();
-            playerBar.style.display = 'flex'; // 显示底部播放器
             playingText.innerText = `正在播放: ${song.title}`;
             document.querySelectorAll('.music-card').forEach(c => c.classList.remove('active-card'));
             card.classList.add('active-card');
