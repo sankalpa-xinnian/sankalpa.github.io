@@ -6,9 +6,9 @@
     <title>sankalpa心念 - 疗愈音乐空间</title>
     <style>
         :root {
-            --bg-page: #f1ece4;       /* 奶茶色底色 */
-            --bg-card: #e5ddd3;       /* 小麦色卡片色 */
-            --text-main: #3e2723;     /* 深咖色文字 */
+            --bg-page: #f1ece4;       
+            --bg-card: #e5ddd3;       
+            --text-main: #3e2723;     
         }
 
         body {
@@ -25,25 +25,18 @@
         .mobile-banner { display: none; }
         @media (max-width: 768px) { .pc-banner { display: none; } .mobile-banner { display: block; } }
 
-        /* --- 响应式网格布局 --- */
         .container {
             max-width: 1200px; width: 92%;
             padding: 30px 0 150px 0;
             display: grid;
-            grid-template-columns: repeat(5, 1fr); /* 电脑端 5 列 */
+            grid-template-columns: repeat(5, 1fr); 
             gap: 15px;
         }
 
-        @media (max-width: 1024px) {
-            .container { grid-template-columns: repeat(3, 1fr); }
-        }
-
         @media (max-width: 768px) {
-            /* 手机端：一排 2 个，共 5 排 */
             .container { grid-template-columns: repeat(2, 1fr); gap: 12px; }
         }
 
-        /* --- 极简播放器卡片 --- */
         .music-card {
             background: var(--bg-card);
             border-radius: 20px;
@@ -51,8 +44,8 @@
             display: flex; flex-direction: column;
             cursor: pointer;
             transition: transform 0.2s ease;
+            position: relative;
         }
-        .music-card:active { transform: scale(0.98); }
 
         .cover-box {
             width: 100%; aspect-ratio: 1 / 1;
@@ -61,43 +54,51 @@
         }
         .cover-img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* --- 图片中心播放按钮（纯 CSS 绘制，不乱码） --- */
+        /* --- 动态播放按钮容器 --- */
         .play-overlay {
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 40px; height: 40px;
-            background: rgba(255, 255, 255, 0.3);
+            width: 44px; height: 44px;
+            background: rgba(255, 255, 255, 0.35);
             backdrop-filter: blur(4px);
             border: 2px solid rgba(255, 255, 255, 0.8);
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
+            z-index: 2;
         }
-        .play-overlay::after {
-            content: '';
+
+        /* 默认状态：三角形播放图标 */
+        .icon-shape {
+            width: 0; height: 0; 
             border-top: 8px solid transparent;
             border-bottom: 8px solid transparent;
-            border-left: 12px solid white;
+            border-left: 13px solid white;
             margin-left: 4px;
+        }
+
+        /* 播放中状态：变成双竖线暂停图标 */
+        .playing .icon-shape {
+            width: 12px; height: 14px;
+            border: none;
+            border-left: 4px solid white;
+            border-right: 4px solid white;
+            margin-left: 0;
         }
 
         .info { padding-top: 12px; text-align: center; }
         .title {
-            font-size: 0.85em; 
-            font-weight: 700; /* 加粗 */
-            line-height: 1.4;
+            font-size: 0.85em; font-weight: 700; line-height: 1.4;
             min-height: 2.8em;
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* --- 底部播放控件 --- */
         .player-bar {
             position: fixed; bottom: 20px;
             width: 90%; max-width: 500px;
             background: rgba(229, 221, 211, 0.95);
             backdrop-filter: blur(20px);
-            border-radius: 100px;
-            padding: 10px 20px;
+            border-radius: 100px; padding: 10px 20px;
             box-shadow: 0 8px 30px rgba(0,0,0,0.1);
             display: flex; flex-direction: column; align-items: center;
             z-index: 1000;
@@ -105,7 +106,8 @@
         #currentPlaying { font-size: 0.75em; font-weight: 700; margin-bottom: 5px; }
         audio { width: 100%; height: 32px; filter: sepia(20%); }
 
-        .active-card { outline: 2px solid var(--text-main); }
+        /* 正在播放的卡片边框加深 */
+        .active-card { outline: 2.5px solid var(--text-main); }
     </style>
 </head>
 <body>
@@ -144,24 +146,41 @@
     songs.forEach(song => {
         const card = document.createElement('div');
         card.className = 'music-card';
+        card.dataset.id = song.id;
         card.innerHTML = `
             <div class="cover-box">
-                <div class="play-overlay"></div>
+                <div class="play-overlay">
+                    <div class="icon-shape"></div>
+                </div>
                 <img src="cover${song.id}.jpg" class="cover-img">
             </div>
             <div class="info">
                 <div class="title">${song.title}</div>
             </div>
         `;
+        
         card.onclick = () => {
-            player.src = `${baseUrl}${song.id}.mp3`;
-            player.play();
-            playingText.innerText = `正在播放: ${song.title}`;
-            document.querySelectorAll('.music-card').forEach(c => c.classList.remove('active-card'));
-            card.classList.add('active-card');
+            // 如果点的是已经在播放的，就不用重新加载（可选）
+            if (player.src !== `${baseUrl}${song.id}.mp3`) {
+                player.src = `${baseUrl}${song.id}.mp3`;
+                player.play();
+                playingText.innerText = `正在播放: ${song.title}`;
+            }
+
+            // 更新 UI 状态
+            document.querySelectorAll('.music-card').forEach(c => {
+                c.classList.remove('active-card', 'playing');
+            });
+            card.classList.add('active-card', 'playing');
         };
         musicList.appendChild(card);
     });
+
+    // 监听播放结束，重置图标
+    player.onended = () => {
+        document.querySelectorAll('.music-card').forEach(c => c.classList.remove('playing'));
+        playingText.innerText = "播放已结束";
+    };
 </script>
 </body>
 </html>
