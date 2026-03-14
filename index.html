@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sankalpa心念 | 疗愈音乐空间</title>
+    <style>
+        :root {
+            --bg-color: #fcfaf6; 
+            --text-color: #5d5d5d; 
+            --accent-color: #b5c4b1; /* 宁静的草木色 */
+            --card-bg: rgba(255, 255, 255, 0.9);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        /* --- 品牌 Logo 露出 --- */
+        .brand-logo {
+            position: fixed; /* 固定在左上角 */
+            top: 30px;
+            left: 40px;
+            z-index: 100;
+            font-size: 1.2rem;
+            letter-spacing: 3px;
+            font-weight: 300;
+            color: #fff; /* 默认白色，适合深色Banner */
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            mix-blend-mode: difference; /* 智能混合模式：根据背景色自动反色，保证可见 */
+        }
+
+        /* --- 纯图 Banner 区域 --- */
+        .banner {
+            width: 100%;
+            height: 75vh; 
+            background: url('butterfly-banner.jpg') no-repeat center center;
+            background-size: cover;
+            position: relative;
+        }
+
+        /* --- 音乐展示区 --- */
+        .main-container {
+            max-width: 1200px;
+            margin: 60px auto 100px;
+            padding: 0 20px;
+        }
+
+        .music-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px 30px;
+        }
+
+        .music-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 40px 20px 30px;
+            text-align: center;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .music-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        }
+
+        .song-cover {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-bottom: 25px;
+            object-fit: cover;
+            /* 给封面加一个淡淡的呼吸光晕 */
+            box-shadow: 0 0 20px rgba(181, 196, 177, 0.3);
+        }
+
+        .song-name {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .song-desc {
+            display: block;
+            font-size: 0.85rem;
+            color: #999;
+            margin-bottom: 25px;
+        }
+
+        audio {
+            width: 100%;
+            height: 32px;
+            opacity: 0.7; /* 弱化播放器存在感，让视觉更干净 */
+            filter: grayscale(1) contrast(0.8); /* 极简灰色 */
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 1024px) { .music-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .music-grid { grid-template-columns: 1fr; } .brand-logo { left: 20px; top: 20px; } }
+    </style>
+</head>
+<body>
+
+    <div class="brand-logo">sankalpa心念</div>
+
+    <div class="banner"></div>
+
+    <div class="main-container">
+        <div class="music-grid" id="grid"></div>
+    </div>
+
+    <script>
+        const songs = [
+            { name: "心念起处", desc: "遇见内在的宁静", cover: "cover1.jpg", src: "1.mp3" },
+            { name: "显化频率", desc: "528Hz 宇宙共振", cover: "cover2.jpg", src: "2.mp3" },
+            { name: "纯净意识", desc: "清理杂念与纷扰", cover: "cover3.jpg", src: "3.mp3" },
+            { name: "蝴蝶蜕变", desc: "破茧成蝶的力量", cover: "cover4.jpg", src: "4.mp3" },
+            { name: "星空冥想", desc: "连接无限可能", cover: "cover5.jpg", src: "5.mp3" },
+            { name: "大地之根", desc: "稳定身心的能量", cover: "cover6.jpg", src: "6.mp3" },
+            { name: "呼吸之间", desc: "专注当下的觉察", cover: "cover7.jpg", src: "7.mp3" },
+            { name: "感恩心流", desc: "丰盛生命的源泉", cover: "cover8.jpg", src: "8.mp3" },
+            { name: "智慧开启", desc: "照见真实自我", cover: "cover9.jpg", src: "9.mp3" },
+            { name: "光之语言", desc: "高频振动修复", cover: "cover10.jpg", src: "10.mp3" },
+            { name: "慈悲心怀", desc: "温柔待己待人", cover: "cover11.jpg", src: "11.mp3" },
+            { name: "圆满觉知", desc: "回归生命本源", cover: "cover12.jpg", src: "12.mp3" }
+        ];
+
+        const container = document.getElementById('grid');
+        songs.forEach(s => {
+            container.innerHTML += `
+                <div class="music-card">
+                    <img src="${s.cover}" class="song-cover">
+                    <strong class="song-name">${s.name}</strong>
+                    <span class="song-desc">${s.desc}</span>
+                    <audio controls src="${s.src}"></audio>
+                </div>
+            `;
+        });
+
+        // 互斥播放逻辑
+        const audios = document.querySelectorAll('audio');
+        audios.forEach(a => {
+            a.addEventListener('play', () => {
+                audios.forEach(other => { if(other !== a) other.pause(); });
+            });
+        });
+    </script>
+</body>
+</html>
